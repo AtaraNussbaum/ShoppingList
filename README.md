@@ -84,9 +84,9 @@ npm run dev
 # בנייה לייצור
 npm run build
 
-Copy
 
-Execute
+
+
 
 שימוש במערכת
 🚀 התחלת עבודה
