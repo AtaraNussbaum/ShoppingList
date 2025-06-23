@@ -1,35 +1,29 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Container,
   Box,
-  Typography,
   AppBar,
   Toolbar,
+  Typography,
   IconButton,
   Badge,
-  Fab,
-  useTheme,
-  useMediaQuery
+  Container,
+  Button
 } from '@mui/material';
+import CategoriesManager from './components/CategoriesManager';
+
 import {
   ShoppingCart,
-  Add,
   Category,
   Receipt
 } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from './store/hooks';
 import { fetchCategories } from './store/thunks/categoriesThunks';
 import ShoppingList from './components/ShoppingList';
-import AddItemForm from './components/AddItemForm';
-import ItemsList from './components/ItemsList';
-import { colors } from './styles/theme';
 import './App.css';
 
 const App: React.FC = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const dispatch = useAppDispatch();
-  
+  const [currentView, setCurrentView] = useState<'shopping' | 'categories'>('shopping');
   const { totalItems, isLoading } = useAppSelector(state => state.shoppingList);
   const { categories } = useAppSelector(state => state.categories);
 
@@ -45,7 +39,7 @@ const App: React.FC = () => {
         <Toolbar>
           <Box display="flex" alignItems="center" gap={2}>
             <ShoppingCart sx={{ fontSize: 28 }} />
-            <Typography variant="h6" component="h1" className="gradient-text">
+            <Typography variant="h6" component="h1" className="app-title">
               רשימת קניות חכמה
             </Typography>
           </Box>
@@ -68,93 +62,108 @@ const App: React.FC = () => {
         </Toolbar>
       </AppBar>
 
-      {/* Main Content */}
-      <Container maxWidth="lg" className="main-container">
-        <Box className="content-wrapper">
-          {/* Hero Section */}
-          <Box className="hero-section slide-up">
-            <Typography variant="h4" component="h2" className="hero-title">
-              ברוכים הבאים לרשימת הקניות החכמה
-            </Typography>
-            <Typography variant="body1" className="hero-subtitle">
-              נהלו את הקניות שלכם בקלות ויעילות
-            </Typography>
-          </Box>
-
-          {/* Stats Cards */}
-          <Box className="stats-container fade-in">
-            <Box className="stat-card">
-              <Box className="stat-icon primary">
-                <ShoppingCart />
-              </Box>
-              <Box>
-                <Typography variant="h6" className="stat-number">
-                  {totalItems}
-                </Typography>
-                <Typography variant="body2" className="stat-label">
-                  פריטים בסל
-                </Typography>
-              </Box>
-            </Box>
-
-            <Box className="stat-card">
-              <Box className="stat-icon secondary">
-                <Category />
-              </Box>
-              <Box>
-                <Typography variant="h6" className="stat-number">
-                  {categories.length}
-                </Typography>
-                <Typography variant="body2" className="stat-label">
-                  קטגוריות זמינות
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
-
-          {/* Main Grid */}
-          <Box className="main-grid">
-            {/* Add Item Form */}
-            <Box className="form-section">
-              <AddItemForm />
-            </Box>
-
-            {/* Items List */}
-            <Box className="list-section">
-              <ItemsList />
-            </Box>
-          </Box>
-
-          {/* Shopping List Actions */}
-          <Box className="actions-section">
-            <ShoppingList />
-          </Box>
-        </Box>
-      </Container>
-
-      {/* Floating Action Button */}
-      {isMobile && (
-        <Fab
-          color="primary"
-          aria-label="add"
-          className="fab-add"
-          onClick={() => {
-            // Scroll to add form
-            document.querySelector('.form-section')?.scrollIntoView({ 
-              behavior: 'smooth' 
-            });
+{/* Main Content */}
+<Container maxWidth="lg" className="main-container">
+  <Box className="content-wrapper">
+    {/* Hero Section */}
+    <Box className="hero-section slide-up">
+      <Typography variant="h4" component="h2" className="hero-title">
+        {currentView === 'shopping' 
+          ? 'ברוכים הבאים לרשימת הקניות החכמה'
+          : 'ניהול קטגוריות'
+        }
+      </Typography>
+      <Typography variant="body1" className="hero-subtitle">
+        {currentView === 'shopping'
+          ? 'נהלו את הקניות שלכם בקלות ויעילות'
+          : 'נהלו את הקטגוריות שלכם - הוסיפו, ערכו או מחקו'
+        }
+      </Typography>
+      
+      {/* Navigation Buttons */}
+      <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'center' }}>
+        <Button
+          variant={currentView === 'shopping' ? 'contained' : 'outlined'}
+          startIcon={<ShoppingCart />}
+          onClick={() => setCurrentView('shopping')}
+          sx={{ 
+            borderRadius: '12px',
+            background: currentView === 'shopping' 
+              ? 'linear-gradient(135deg, #2E7D32, #4CAF50)' 
+              : 'transparent'
           }}
         >
-          <Add />
-        </Fab>
-      )}
+          רשימת קניות
+        </Button>
+        <Button
+          variant={currentView === 'categories' ? 'contained' : 'outlined'}
+          startIcon={<Category />}
+          onClick={() => setCurrentView('categories')}
+          sx={{ 
+            borderRadius: '12px',
+            background: currentView === 'categories' 
+              ? 'linear-gradient(135deg, #FF6B35, #FF8A65)' 
+              : 'transparent'
+          }}
+        >
+          ניהול קטגוריות
+        </Button>
+      </Box>
+    </Box>
+
+    {/* Conditional Content */}
+    {currentView === 'shopping' ? (
+      <>
+        {/* Stats Cards */}
+        <Box className="stats-container fade-in">
+          <Box className="stat-card">
+            <Box className="stat-icon primary">
+              <ShoppingCart />
+            </Box>
+            <Box>
+              <Typography variant="h6" className="stat-number">
+                {totalItems}
+              </Typography>
+              <Typography variant="body2" className="stat-label">
+                פריטים בסל
+              </Typography>
+            </Box>
+          </Box>
+
+          <Box className="stat-card">
+            <Box className="stat-icon secondary">
+              <Category />
+            </Box>
+            <Box>
+              <Typography variant="h6" className="stat-number">
+                {categories.length}
+              </Typography>
+              <Typography variant="body2" className="stat-label">
+                קטגוריות זמינות
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+
+        {/* Shopping List Actions */}
+        <Box className="actions-section">
+          <ShoppingList />
+        </Box>
+      </>
+    ) : (
+      /* Categories Manager */
+      <CategoriesManager />
+    )}
+  </Box>
+</Container>
+
 
       {/* Loading Overlay */}
       {isLoading && (
         <Box className="loading-overlay">
           <Box className="loading-spinner">
             <ShoppingCart className="spinning-icon" />
-            <Typography variant="body1" sx={{ mt: 2, color: colors.text.secondary }}>
+            <Typography variant="body1" sx={{ mt: 2 }}>
               טוען...
             </Typography>
           </Box>

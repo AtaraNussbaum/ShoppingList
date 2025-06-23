@@ -1,0 +1,94 @@
+.customer-card {
+  margin: 20px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
+
+.customer-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.customer-icon {
+  color: #2E7D32;
+  font-size: 32px;
+}
+
+.customer-details {
+  flex: 1;
+}
+
+.customer-title {
+  color: #333;
+  font-weight: 600;
+}
+
+.edit-customer-button {
+  border-color: #2E7D32;
+  color: #2E7D32;
+}
+
+.edit-customer-button:hover {
+  background-color: #2E7D32;
+  color: white;
+}
+
+.action-buttons {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1000;
+}
+
+.action-fab {
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.action-fab:hover {
+  transform: scale(1.1);
+}
+
+.action-fab.save {
+  background-color: #2E7D32;
+}
+
+.action-fab.share {
+  background-color: #1976D2;
+}
+
+.action-fab.print {
+  background-color: #757575;
+}
+
+.action-fab.clear {
+  background-color: #F44336;
+}
+
+.customer-dialog .MuiDialog-paper {
+  border-radius: 12px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .action-buttons {
+    bottom: 10px;
+    right: 10px;
+    gap: 8px;
+  }
+  
+  .action-fab {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .customer-info {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+}

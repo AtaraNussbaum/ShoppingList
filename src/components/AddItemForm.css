@@ -12,13 +12,15 @@
   align-items: center;
   gap: 16px;
   margin-bottom: 8px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 138, 101, 0.2); /* אפרסק עדין */
 }
 
 .header-icon {
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #2E7D32, #4CAF50);
+  background: linear-gradient(135deg, #2E7D32, #4CAF50); /* ירוק */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -38,6 +40,7 @@
   margin-bottom: 16px;
   background: rgba(76, 175, 80, 0.1) !important;
   border: 1px solid rgba(76, 175, 80, 0.3) !important;
+  animation: slideInDown 0.3s ease-out;
 }
 
 .success-alert .MuiAlert-message {
@@ -50,8 +53,9 @@
 .warning-alert {
   border-radius: 12px !important;
   margin-top: 16px;
-  background: rgba(255, 152, 0, 0.1) !important;
-  border: 1px solid rgba(255, 152, 0, 0.3) !important;
+  background: rgba(255, 138, 101, 0.1) !important; /* אפרסק */
+  border: 1px solid rgba(255, 138, 101, 0.3) !important;
+  animation: slideInDown 0.3s ease-out;
 }
 
 /* Form Content */
@@ -70,25 +74,49 @@
 .form-field .MuiOutlinedInput-root {
   border-radius: 12px;
   transition: all 0.3s ease;
+  background: rgba(255, 248, 240, 0.5); /* רקע עם גוון אפרסק עדין */
 }
 
 .form-field .MuiOutlinedInput-root:hover {
-  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.1);
+  box-shadow: 0 2px 8px rgba(255, 138, 101, 0.15); /* צל אפרסק */
+  background: rgba(255, 248, 240, 0.8);
 }
 
 .form-field .MuiOutlinedInput-root.Mui-focused {
-  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2); /* צל ירוק בפוקוס */
+  background: #FFFFFF;
+}
+
+.form-field .MuiInputLabel-root.Mui-focused {
+  color: #2E7D32 !important; /* ירוק */
+}
+
+.form-field .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #2E7D32 !important; /* ירוק */
+  border-width: 2px !important;
+}
+
+/* Error states */
+.form-field .MuiOutlinedInput-root.Mui-error {
+  border-color: #F44336 !important;
+  background: rgba(244, 67, 54, 0.05);
+}
+
+.form-field .MuiFormHelperText-root.Mui-error {
+  color: #F44336 !important;
+  font-weight: 500;
 }
 
 /* Submit Button */
 .submit-button {
   height: 56px !important;
   border-radius: 12px !important;
-  background: linear-gradient(135deg, #2E7D32, #4CAF50) !important;
+  background: linear-gradient(135deg, #2E7D32, #4CAF50) !important; /* ירוק */
   box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3) !important;
   font-weight: 600 !important;
   font-size: 1.1rem !important;
   transition: all 0.3s ease !important;
+  position: relative;
 }
 
 .submit-button:hover {
@@ -102,19 +130,48 @@
   transform: none !important;
 }
 
+/* Loading state for submit button */
+.submit-button.loading {
+  color: transparent !important;
+}
+
+.submit-button.loading::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 50%;
+  left: 50%;
+  margin-left: -10px;
+  margin-top: -10px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+}
+
 /* Quick Add Section */
 .quick-add-section {
   padding: 20px;
-  background: rgba(232, 245, 232, 0.5);
+  background: linear-gradient(135deg, rgba(255, 224, 178, 0.3) 0%, rgba(200, 230, 201, 0.3) 100%); /* גרדיאנט אפרסק-ירוק עדין */
   border-radius: 12px;
-  border: 1px solid rgba(46, 125, 50, 0.1);
+  border: 1px solid rgba(255, 138, 101, 0.2);
+  margin-top: 8px;
 }
 
 .quick-add-title {
-  color: #2E7D32 !important;
+  color: #2E7D32 !important; /* ירוק */
   font-weight: 600 !important;
   margin-bottom: 16px !important;
   font-size: 1.1rem !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quick-add-title::before {
+  content: '⚡';
+  font-size: 1.2rem;
 }
 
 .quick-add-chips {
@@ -125,31 +182,72 @@
 
 .quick-add-chip {
   border-radius: 20px !important;
-  border-color: #4CAF50 !important;
-  color: #2E7D32 !important;
+  border-color: #FF8A65 !important; /* אפרסק */
+  color: #2E7D32 !important; /* ירוק */
   transition: all 0.3s ease !important;
   cursor: pointer !important;
+  background: rgba(255, 255, 255, 0.9) !important;
 }
 
 .quick-add-chip:hover {
-  background: rgba(76, 175, 80, 0.1) !important;
-  border-color: #2E7D32 !important;
+  background: rgba(255, 138, 101, 0.1) !important; /* רקע אפרסק */
+  border-color: #2E7D32 !important; /* גבול ירוק */
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.2);
+  box-shadow: 0 2px 8px rgba(255, 138, 101, 0.3); /* צל אפרסק */
 }
 
 .quick-add-chip:disabled {
   opacity: 0.5;
   cursor: not-allowed !important;
+  transform: none !important;
 }
 
 /* Form Stats */
 .form-stats {
   padding: 16px;
-  background: rgba(255, 255, 255, 0.7);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 248, 240, 0.7) 100%); /* רקע עם גוון אפרסק עדין */
   border-radius: 8px;
   text-align: center;
-  border: 1px solid rgba(224, 224, 224, 0.5);
+  border: 1px solid rgba(255, 138, 101, 0.2);
+  backdrop-filter: blur(5px);
+}
+
+.form-stats .MuiTypography-root {
+  color: #666 !important;
+  font-weight: 500;
+}
+
+/* Animations */
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.add-item-form {
+  animation: slideInRight 0.5s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* Responsive Design */
@@ -160,6 +258,7 @@
   
   .form-header {
     gap: 12px;
+    padding-bottom: 12px;
   }
   
   .header-icon {
@@ -185,6 +284,7 @@
   
   .quick-add-chip {
     font-size: 0.8rem !important;
+    padding: 4px 8px !important;
   }
   
   .submit-button {
@@ -193,65 +293,40 @@
   }
 }
 
-/* Animation for form appearance */
-.add-item-form {
-  animation: slideInRight 0.5s ease-out;
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
+@media (max-width: 480px) {
+  .form-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
   }
-  to {
-    opacity: 1;
-    transform: translateX(0);
+  
+  .quick-add-title {
+    font-size: 1rem !important;
+  }
+  
+  .form-stats {
+    padding: 12px;
   }
 }
 
 /* Focus states for accessibility */
-.form-field .MuiInputLabel-root.Mui-focused {
-  color: #2E7D32 !important;
+.form-field .MuiOutlinedInput-root:focus-within {
+  outline: 2px solid rgba(46, 125, 50, 0.2); /* ירוק */
+  outline-offset: 2px;
 }
 
-.form-field .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-  border-color: #2E7D32 !important;
-  border-width: 2px !important;
+.submit-button:focus {
+  outline: 3px solid rgba(46, 125, 50, 0.5); /* ירוק */
+  outline-offset: 2px;
 }
 
-/* Error states */
-.form-field .MuiOutlinedInput-root.Mui-error {
-  border-color: #F44336 !important;
+.quick-add-chip:focus {
+  outline: 2px solid rgba(255, 138, 101, 0.5); /* אפרסק */
+  outline-offset: 2px;
 }
 
-.form-field .MuiFormHelperText-root.Mui-error {
-  color: #F44336 !important;
-  font-weight: 500;
+/* Smooth transitions */
+* {
+  transition: box-shadow 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
 }
 
-/* Loading state for submit button */
-.submit-button.loading {
-  position: relative;
-  color: transparent !important;
-}
-
-.submit-button.loading::after {
-  content: '';
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  top: 50%;
-  left: 50%;
-  margin-left: -10px;
-  margin-top: -10px;
-  border: 2px solid #ffffff;
-  border-radius: 50%;
-  border-top-color: transparent;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}

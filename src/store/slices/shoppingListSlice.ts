@@ -7,7 +7,8 @@ import {
   addItemToList,
   updateItemInList,
   removeItemFromList,
-  completeOrder
+  completeOrder,
+  deleteShoppingList
 } from '../thunks/shoppingListThunks';
 
 const initialState: ShoppingListState = {
@@ -81,8 +82,9 @@ const shoppingListSlice = createSlice({
       .addCase(createShoppingList.fulfilled, (state, action: PayloadAction<ShoppingList>) => {
         state.isLoading = false;
         state.currentList = action.payload;
-        state.items = action.payload.items;
-        state.totalItems = action.payload.items.reduce((total, item) => total + item.quantity, 0);
+        // Clear local items after successful save
+        state.items = [];
+        state.totalItems = 0;
       })
       .addCase(createShoppingList.rejected, (state, action) => {
         state.isLoading = false;
@@ -119,9 +121,19 @@ const shoppingListSlice = createSlice({
       })
       
       // Complete Order
-      .addCase(completeOrder.fulfilled, (state) => {
-        if (state.currentList) {
-          state.currentList.isCompleted = true;
+      .addCase(completeOrder.fulfilled, (state, action: PayloadAction<ShoppingList>) => {
+        state.currentList = action.payload;
+        // Clear local items after successful completion
+        state.items = [];
+        state.totalItems = 0;
+      })
+      
+      // Delete Shopping List
+      .addCase(deleteShoppingList.fulfilled, (state, action: PayloadAction<number>) => {
+        if (state.currentList && state.currentList.id === action.payload) {
+          state.currentList = null;
+          state.items = [];
+          state.totalItems = 0;
         }
       });
   },
