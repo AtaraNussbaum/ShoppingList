@@ -1,9 +1,17 @@
 /* App Container */
 .app-container {
   min-height: 100vh;
-  background: #f5f7fa ;
+  display: flex !important;
+  flex-direction: column !important;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
+/* עדכן את main-container: */
+.main-container {
+  flex: 1 !important;
+  padding-top: 20px !important;
+  padding-bottom: 20px !important;
+}
 /* Header Styles */
 .app-header {
   background: linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%) !important; /* ירוק */
@@ -22,12 +30,7 @@
   background-clip: text;
 }
 
-/* Main Container */
-.main-container {
-  padding-top: 20px !important;
-  padding-bottom: 20px !important;
-  max-width: 1400px !important; /* הגדלת רוחב מקסימלי */
-}
+
 
 .content-wrapper {
   display: flex;

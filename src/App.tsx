@@ -20,6 +20,7 @@ import { useAppDispatch, useAppSelector } from './store/hooks';
 import { fetchCategories } from './store/thunks/categoriesThunks';
 import ShoppingList from './components/ShoppingList';
 import './App.css';
+import Footer from './components/Footer';
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -169,6 +170,8 @@ const App: React.FC = () => {
           </Box>
         </Box>
       )}
+          <Footer />
+
     </Box>
   );
 };
