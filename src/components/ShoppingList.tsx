@@ -197,32 +197,6 @@ const ShoppingList: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Customer Info Card */}
-      <Card className="customer-card">
-        <CardContent>
-          <Box className="customer-info">
-            <Person className="customer-icon" />
-            <Box className="customer-details">
-              <Typography variant="h6" className="customer-title">
-                {customerName || 'לקוח אנונימי'}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                לחץ לעריכת שם הלקוח
-              </Typography>
-            </Box>
-          </Box>
-        </CardContent>
-        <CardActions>
-          <Button
-            startIcon={<Person />}
-            onClick={() => setShowCustomerDialog(true)}
-            className="edit-customer-button"
-          >
-            עריכת שם לקוח
-          </Button>
-        </CardActions>
-      </Card>
-
       {/* Summary Cards */}
       <Box className="summary-section">
         <Card className="summary-card">
@@ -274,6 +248,8 @@ const ShoppingList: React.FC = () => {
         </Card>
       </Box>
 
+     
+
       {/* Main Content */}
       <Box className="main-content">
         {/* Add Item Form */}
@@ -287,7 +263,31 @@ const ShoppingList: React.FC = () => {
         </Paper>
       </Box>
 
-
+ {/* Customer Info Card - שינוי מבנה */}
+ <Card className="customer-card">
+        <CardContent>
+          <Box className="customer-info">
+            <Person className="customer-icon" />
+            <Box className="customer-details">
+              <Typography variant="h6" className="customer-title">
+                {customerName || 'לקוח אנונימי'}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                ניתן לערוך את שם הלקוח
+              </Typography>
+            </Box>
+            {/* העברת הכפתור לכאן */}
+            <Button
+              variant="outlined"
+              startIcon={<Person />}
+              onClick={() => setShowCustomerDialog(true)}
+              className="edit-customer-button"
+            >
+              עריכה
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
 {/* Action Buttons */}
 <Box className="action-buttons">
   <Tooltip title="שמור רשימה">

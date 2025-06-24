@@ -393,3 +393,90 @@
   transform: none !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
 }
+
+/* הוסף/תקן את הסגנונות האלה */
+
+/* Customer Card - תיקון מיקום הכפתור */
+.customer-card {
+  margin: 20px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  background: linear-gradient(135deg, #FFFFFF 0%, rgba(255, 224, 178, 0.05) 100%);
+}
+
+.customer-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px;
+}
+
+.customer-icon {
+  color: #2E7D32;
+  font-size: 32px;
+}
+
+.customer-details {
+  flex: 1;
+  margin-right: 16px;
+}
+
+.customer-title {
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+/* תיקון כפתור עריכת לקוח */
+.customer-card .MuiCardContent-root {
+  padding: 0 !important;
+}
+
+.customer-card .MuiCardActions-root {
+  display: none !important;
+}
+
+.edit-customer-button {
+  border-color: #2E7D32 !important;
+  color: #2E7D32 !important;
+  border-radius: 8px !important;
+  padding: 8px 16px !important;
+  font-size: 0.875rem !important;
+  text-transform: none !important;
+  min-width: auto !important;
+  height: fit-content !important;
+}
+
+.edit-customer-button:hover {
+  background-color: #2E7D32 !important;
+  color: white !important;
+}
+
+/* Dialog עריכת לקוח */
+.customer-dialog .MuiDialog-paper {
+  border-radius: 16px !important;
+}
+
+/* Responsive עבור customer card */
+@media (max-width: 600px) {
+  .customer-info {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+    padding: 16px;
+  }
+  
+  .customer-details {
+    margin-right: 0;
+  }
+  
+  .customer-icon {
+    font-size: 28px;
+  }
+  
+  .edit-customer-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
