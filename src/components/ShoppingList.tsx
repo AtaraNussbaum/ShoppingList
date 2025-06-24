@@ -287,8 +287,6 @@ const ShoppingList: React.FC = () => {
         </Paper>
       </Box>
 
-      {/* Action Buttons */}
-      // החלף את החלק של Action Buttons:
 
 {/* Action Buttons */}
 <Box className="action-buttons">
