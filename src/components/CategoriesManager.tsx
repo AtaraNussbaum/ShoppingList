@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -19,8 +19,8 @@ import {
   Card,
   CardContent,
   CardActions,
-  Divider
-} from '@mui/material';
+  Divider,
+} from "@mui/material";
 import {
   Add,
   Edit,
@@ -28,27 +28,28 @@ import {
   Category,
   Save,
   Cancel,
-  Warning
-} from '@mui/icons-material';
-import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
+  Warning,
+} from "@mui/icons-material";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
+  fetchCategories,
   createCategory,
   updateCategory,
-  deleteCategory
-} from '../store/thunks/categoriesThunks';
-import { CreateCategoryDto, UpdateCategoryDto } from '../types';
-import './CategoriesManager.css';
+  deleteCategory,
+} from "../store/thunks/categoriesThunks";
+import { CreateCategoryDto, UpdateCategoryDto } from "../types";
+import "./CategoriesManager.css";
 
 // Validation Schema
 const schema = yup.object({
   name: yup
     .string()
-    .required('שם הקטגוריה הוא שדה חובה')
-    .min(2, 'שם הקטגוריה חייב להכיל לפחות 2 תווים')
-    .max(30, 'שם הקטגוריה לא יכול להכיל יותר מ-30 תווים')
+    .required("שם הקטגוריה הוא שדה חובה")
+    .min(2, "שם הקטגוריה חייב להכיל לפחות 2 תווים")
+    .max(30, "שם הקטגוריה לא יכול להכיל יותר מ-30 תווים"),
 });
 
 interface CategoryFormData {
@@ -57,29 +58,41 @@ interface CategoryFormData {
 
 const CategoriesManager: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { categories, isLoading } = useAppSelector(state => state.categories);
-  const { items } = useAppSelector(state => state.shoppingList);
-  
+  const { categories, isLoading } = useAppSelector((state) => state.categories);
+  const { items } = useAppSelector((state) => state.shoppingList);
+
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
   const [showSnackbar, setShowSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
+    "success"
+  );
+
+  // טעינת קטגוריות בעת הרכבת הקומפוננט
+  useEffect(() => {
+    if (categories.length === 0 && !isLoading) {
+      dispatch(fetchCategories());
+    }
+  }, [dispatch, categories.length, isLoading]);
 
   const {
     control,
     handleSubmit,
     reset,
-    formState: { errors, isValid }
+    formState: { errors, isValid },
   } = useForm<CategoryFormData>({
     resolver: yupResolver(schema),
-    defaultValues: { name: '' },
-    mode: 'onChange'
+    defaultValues: { name: "" },
+    mode: "onChange",
   });
 
-  const showMessage = (message: string, severity: 'success' | 'error' = 'success') => {
+  const showMessage = (
+    message: string,
+    severity: "success" | "error" = "success"
+  ) => {
     setSnackbarMessage(message);
     setSnackbarSeverity(severity);
     setShowSnackbar(true);
@@ -88,41 +101,43 @@ const CategoriesManager: React.FC = () => {
   const handleAddCategory = async (data: CategoryFormData) => {
     try {
       await dispatch(createCategory({ name: data.name.trim() })).unwrap();
-      showMessage('הקטגוריה נוספה בהצלחה!');
+      showMessage("הקטגוריה נוספה בהצלחה!");
       setShowAddDialog(false);
       reset();
     } catch (error) {
-      showMessage('שגיאה בהוספת הקטגוריה', 'error');
+      showMessage("שגיאה בהוספת הקטגוריה", "error");
     }
   };
 
   const handleEditCategory = async (data: CategoryFormData) => {
     if (!selectedCategory) return;
-    
+
     try {
-      await dispatch(updateCategory({
-        id: selectedCategory.id,
-        data: { name: data.name.trim() }
-      })).unwrap();
-      showMessage('הקטגוריה עודכנה בהצלחה!');
+      await dispatch(
+        updateCategory({
+          id: selectedCategory.id,
+          data: { name: data.name.trim() },
+        })
+      ).unwrap();
+      showMessage("הקטגוריה עודכנה בהצלחה!");
       setShowEditDialog(false);
       setSelectedCategory(null);
       reset();
     } catch (error) {
-      showMessage('שגיאה בעדכון הקטגוריה', 'error');
+      showMessage("שגיאה בעדכון הקטגוריה", "error");
     }
   };
 
   const handleDeleteCategory = async () => {
     if (!selectedCategory) return;
-    
+
     try {
       await dispatch(deleteCategory(selectedCategory.id)).unwrap();
-      showMessage('הקטגוריה נמחקה בהצלחה!');
+      showMessage("הקטגוריה נמחקה בהצלחה!");
       setShowDeleteDialog(false);
       setSelectedCategory(null);
     } catch (error) {
-      showMessage('שגיאה במחיקת הקטגוריה', 'error');
+      showMessage("שגיאה במחיקת הקטגוריה", "error");
     }
   };
 
@@ -138,7 +153,7 @@ const CategoriesManager: React.FC = () => {
   };
 
   const getCategoryUsageCount = (categoryId: number) => {
-    return items.filter(item => item.categoryId === categoryId).length;
+    return items.filter((item) => item.categoryId === categoryId).length;
   };
 
   const canDeleteCategory = (categoryId: number) => {
@@ -163,7 +178,7 @@ const CategoriesManager: React.FC = () => {
               </Typography>
             </Box>
             <Box className="header-stats">
-              <Chip 
+              <Chip
                 label={`${categories.length} קטגוריות`}
                 className="stats-chip"
               />
@@ -189,7 +204,7 @@ const CategoriesManager: React.FC = () => {
           <Typography variant="h6" className="list-title">
             רשימת קטגוריות ({categories.length})
           </Typography>
-          
+
           {categories.length === 0 ? (
             <Box className="empty-state">
               <Category className="empty-icon" />
@@ -205,26 +220,33 @@ const CategoriesManager: React.FC = () => {
               {categories.map((category, index) => {
                 const usageCount = getCategoryUsageCount(category.id);
                 const canDelete = canDeleteCategory(category.id);
-                
+
                 return (
                   <React.Fragment key={category.id}>
                     <ListItem className="category-item">
                       <ListItemText
                         primary={
                           <Box className="category-info">
-                            <Typography variant="body1" className="category-name">
+                            <Typography
+                              variant="body1"
+                              className="category-name"
+                            >
                               {category.name}
                             </Typography>
                             <Box className="category-badges">
                               <Chip
                                 size="small"
                                 label={`${usageCount} פריטים`}
-                                className={`usage-chip ${usageCount > 0 ? 'has-items' : 'no-items'}`}
+                                className={`usage-chip ${
+                                  usageCount > 0 ? "has-items" : "no-items"
+                                }`}
                               />
                               {category.createdAt && (
                                 <Chip
                                   size="small"
-                                  label={new Date(category.createdAt).toLocaleDateString('he-IL')}
+                                  label={new Date(
+                                    category.createdAt
+                                  ).toLocaleDateString("he-IL")}
                                   className="date-chip"
                                 />
                               )}
@@ -232,7 +254,7 @@ const CategoriesManager: React.FC = () => {
                           </Box>
                         }
                       />
-                      
+
                       <ListItemSecondaryAction>
                         <Box className="category-actions">
                           <IconButton
@@ -243,7 +265,7 @@ const CategoriesManager: React.FC = () => {
                           >
                             <Edit />
                           </IconButton>
-                          
+
                           <IconButton
                             size="small"
                             onClick={() => openDeleteDialog(category)}
@@ -255,7 +277,7 @@ const CategoriesManager: React.FC = () => {
                         </Box>
                       </ListItemSecondaryAction>
                     </ListItem>
-                    
+
                     {index < categories.length - 1 && <Divider />}
                   </React.Fragment>
                 );
@@ -299,7 +321,10 @@ const CategoriesManager: React.FC = () => {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setShowAddDialog(false)} startIcon={<Cancel />}>
+            <Button
+              onClick={() => setShowAddDialog(false)}
+              startIcon={<Cancel />}
+            >
               ביטול
             </Button>
             <Button
@@ -308,7 +333,7 @@ const CategoriesManager: React.FC = () => {
               disabled={!isValid || isLoading}
               startIcon={<Save />}
             >
-              {isLoading ? 'שומר...' : 'שמור'}
+              {isLoading ? "שומר..." : "שמור"}
             </Button>
           </DialogActions>
         </form>
@@ -347,12 +372,12 @@ const CategoriesManager: React.FC = () => {
             />
           </DialogContent>
           <DialogActions>
-            <Button 
+            <Button
               onClick={() => {
                 setShowEditDialog(false);
                 setSelectedCategory(null);
                 reset();
-              }} 
+              }}
               startIcon={<Cancel />}
             >
               ביטול
@@ -363,7 +388,7 @@ const CategoriesManager: React.FC = () => {
               disabled={!isValid || isLoading}
               startIcon={<Save />}
             >
-              {isLoading ? 'מעדכן...' : 'עדכן'}
+              {isLoading ? "מעדכן..." : "עדכן"}
             </Button>
           </DialogActions>
         </form>
@@ -390,15 +415,17 @@ const CategoriesManager: React.FC = () => {
           <Typography variant="body1">
             האם אתה בטוח שברצונך למחוק את הקטגוריה "{selectedCategory?.name}"?
           </Typography>
-          {selectedCategory && getCategoryUsageCount(selectedCategory.id) > 0 && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              לא ניתן למחוק קטגוריה שיש בה {getCategoryUsageCount(selectedCategory.id)} פריטים.
-              מחק תחילה את כל הפריטים בקטגוריה זו.
-            </Alert>
-          )}
+          {selectedCategory &&
+            getCategoryUsageCount(selectedCategory.id) > 0 && (
+              <Alert severity="error" sx={{ mt: 2 }}>
+                לא ניתן למחוק קטגוריה שיש בה{" "}
+                {getCategoryUsageCount(selectedCategory.id)} פריטים. מחק תחילה
+                את כל הפריטים בקטגוריה זו.
+              </Alert>
+            )}
         </DialogContent>
         <DialogActions>
-          <Button 
+          <Button
             onClick={() => {
               setShowDeleteDialog(false);
               setSelectedCategory(null);
@@ -411,10 +438,13 @@ const CategoriesManager: React.FC = () => {
             onClick={handleDeleteCategory}
             variant="contained"
             color="error"
-            disabled={isLoading || (selectedCategory && !canDeleteCategory(selectedCategory.id))}
+            disabled={
+              isLoading ||
+              (selectedCategory && !canDeleteCategory(selectedCategory.id))
+            }
             startIcon={<Delete />}
           >
-            {isLoading ? 'מוחק...' : 'מחק'}
+            {isLoading ? "מוחק..." : "מחק"}
           </Button>
         </DialogActions>
       </Dialog>
@@ -424,7 +454,7 @@ const CategoriesManager: React.FC = () => {
         open={showSnackbar}
         autoHideDuration={4000}
         onClose={() => setShowSnackbar(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <Alert
           onClose={() => setShowSnackbar(false)}

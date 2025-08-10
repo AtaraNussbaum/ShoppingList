@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   TextField,
@@ -12,84 +12,99 @@ import {
   Chip,
   Alert,
   Collapse,
-  InputAdornment
-} from '@mui/material';
+  InputAdornment,
+} from "@mui/material";
 import {
   Add,
   ShoppingBasket,
   Category,
   Numbers,
   Close,
-  CheckCircle
-} from '@mui/icons-material';
-import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { addLocalItem } from '../store/slices/shoppingListSlice';
-import { AddItemFormData } from '../types';
-import './AddItemForm.css';
+  CheckCircle,
+} from "@mui/icons-material";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { addLocalItem } from "../store/slices/shoppingListSlice";
+import { fetchCategories } from "../store/thunks/categoriesThunks";
+import { AddItemFormData } from "../types";
+import "./AddItemForm.css";
 
 // Validation Schema
 const schema = yup.object({
   name: yup
     .string()
-    .required('שם הפריט הוא שדה חובה')
-    .min(2, 'שם הפריט חייב להכיל לפחות 2 תווים')
-    .max(50, 'שם הפריט לא יכול להכיל יותר מ-50 תווים'),
+    .required("שם הפריט הוא שדה חובה")
+    .min(2, "שם הפריט חייב להכיל לפחות 2 תווים")
+    .max(50, "שם הפריט לא יכול להכיל יותר מ-50 תווים"),
   categoryId: yup
     .number()
-    .required('יש לבחור קטגוריה')
-    .min(1, 'יש לבחור קטגוריה תקינה'),
+    .required("יש לבחור קטגוריה")
+    .min(1, "יש לבחור קטגוריה תקינה"),
   quantity: yup
     .number()
-    .required('כמות היא שדה חובה')
-    .min(1, 'הכמות חייבת להיות לפחות 1')
-    .max(100, 'הכמות לא יכולה להיות יותר מ-100')
+    .required("כמות היא שדה חובה")
+    .min(1, "הכמות חייבת להיות לפחות 1")
+    .max(100, "הכמות לא יכולה להיות יותר מ-100"),
 });
 
 const AddItemForm: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { categories, isLoading: categoriesLoading } = useAppSelector(state => state.categories);
-  const { items } = useAppSelector(state => state.shoppingList);
-  
+  const { categories, isLoading: categoriesLoading } = useAppSelector(
+    (state) => state.categories
+  );
+  const { items } = useAppSelector((state) => state.shoppingList);
+
   const [showSuccess, setShowSuccess] = useState(false);
-  const [lastAddedItem, setLastAddedItem] = useState<string>('');
+  const [lastAddedItem, setLastAddedItem] = useState<string>("");
+
+  // טעינת קטגוריות בעת הרכבת הקומפוננט אם הן לא נטענו
+  useEffect(() => {
+    if (categories.length === 0 && !categoriesLoading) {
+      dispatch(fetchCategories());
+    }
+  }, [dispatch, categories.length, categoriesLoading]);
 
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors, isValid },
-    watch
+    watch,
   } = useForm<AddItemFormData>({
     resolver: yupResolver(schema),
     defaultValues: {
-      name: '',
+      name: "",
       categoryId: 0,
-      quantity: 1
+      quantity: 1,
     },
-    mode: 'onChange'
+    mode: "onChange",
   });
 
-  const watchedName = watch('name');
-  const watchedCategoryId = watch('categoryId');
+  const watchedName = watch("name");
+  const watchedCategoryId = watch("categoryId");
 
   // בדיקה אם הפריט כבר קיים
-  const itemExists = items.some(item => 
-    item.name.toLowerCase() === watchedName?.toLowerCase() && 
-    item.categoryId === watchedCategoryId
+  const itemExists = items.some(
+    (item) =>
+      item.name.toLowerCase() === watchedName?.toLowerCase() &&
+      item.categoryId === watchedCategoryId
   );
 
   const onSubmit = (data: AddItemFormData) => {
-    const selectedCategory = categories.find(cat => cat.id === data.categoryId);
-    
+    const selectedCategory = categories.find(
+      (cat) => cat.id === data.categoryId
+    );
+
     if (selectedCategory) {
-      dispatch(addLocalItem({
-        name: data.name.trim(),
-        categoryId: data.categoryId,
-        categoryName: selectedCategory.name
-      }));
+      dispatch(
+        addLocalItem({
+          name: data.name.trim(),
+          categoryId: data.categoryId,
+          categoryName: selectedCategory.name,
+        })
+      );
 
       setLastAddedItem(data.name);
       setShowSuccess(true);
@@ -103,26 +118,36 @@ const AddItemForm: React.FC = () => {
   };
 
   const quickAddItems = [
-    { name: 'חלב', icon: '🥛' },
-    { name: 'לחם', icon: '🍞' },
-    { name: 'ביצים', icon: '🥚' },
-    { name: 'בננות', icon: '🍌' },
-    { name: 'עגבניות', icon: '🍅' },
-    { name: 'גבינה', icon: '🧀' }
+    { name: "חלב", icon: "🥛" },
+    { name: "לחם", icon: "🍞" },
+    { name: "ביצים", icon: "🥚" },
+    { name: "בננות", icon: "🍌" },
+    { name: "עגבניות", icon: "🍅" },
+    { name: "גבינה", icon: "🧀" },
   ];
 
   const handleQuickAdd = (itemName: string) => {
+    // בדיקה אם יש קטגוריות זמינות
+    if (categories.length === 0) {
+      // נטען קטגוריות אם הן לא קיימות
+      dispatch(fetchCategories());
+      return;
+    }
+
     // מציאת קטגוריה מתאימה (אם קיימת)
-    const defaultCategory = categories.find(cat => 
-      cat.name.includes('כללי') || cat.name.includes('בסיסי')
-    ) || categories[0];
+    const defaultCategory =
+      categories.find(
+        (cat) => cat.name.includes("כללי") || cat.name.includes("בסיסי")
+      ) || categories[0];
 
     if (defaultCategory) {
-      dispatch(addLocalItem({
-        name: itemName,
-        categoryId: defaultCategory.id,
-        categoryName: defaultCategory.name
-      }));
+      dispatch(
+        addLocalItem({
+          name: itemName,
+          categoryId: defaultCategory.id,
+          categoryName: defaultCategory.name,
+        })
+      );
 
       setLastAddedItem(itemName);
       setShowSuccess(true);
@@ -144,8 +169,8 @@ const AddItemForm: React.FC = () => {
 
       {/* Success Alert */}
       <Collapse in={showSuccess}>
-        <Alert 
-          severity="success" 
+        <Alert
+          severity="success"
           className="success-alert"
           action={
             <IconButton
@@ -197,7 +222,11 @@ const AddItemForm: React.FC = () => {
             name="categoryId"
             control={control}
             render={({ field }) => (
-              <FormControl fullWidth error={!!errors.categoryId} className="form-field">
+              <FormControl
+                fullWidth
+                error={!!errors.categoryId}
+                className="form-field"
+              >
                 <InputLabel>קטגוריה</InputLabel>
                 <Select
                   {...field}
@@ -218,7 +247,11 @@ const AddItemForm: React.FC = () => {
                   ))}
                 </Select>
                 {errors.categoryId && (
-                  <Typography variant="caption" color="error" sx={{ mt: 0.5, mr: 2 }}>
+                  <Typography
+                    variant="caption"
+                    color="error"
+                    sx={{ mt: 0.5, mr: 2 }}
+                  >
                     {errors.categoryId.message}
                   </Typography>
                 )}
@@ -245,13 +278,38 @@ const AddItemForm: React.FC = () => {
                       <Numbers color="action" />
                     </InputAdornment>
                   ),
-                  inputProps: { min: 1, max: 100 }
+                  inputProps: { min: 1, max: 100 },
                 }}
                 className="form-field"
               />
             )}
           />
         </Box>
+
+        {/* Categories Loading/Error Alert */}
+        {categoriesLoading && (
+          <Alert severity="info" className="info-alert">
+            טוען קטגוריות...
+          </Alert>
+        )}
+
+        {!categoriesLoading && categories.length === 0 && (
+          <Alert
+            severity="warning"
+            className="warning-alert"
+            action={
+              <Button
+                color="inherit"
+                size="small"
+                onClick={() => dispatch(fetchCategories())}
+              >
+                טען קטגוריות
+              </Button>
+            }
+          >
+            לא נמצאו קטגוריות. יש ליצור קטגוריות תחילה.
+          </Alert>
+        )}
 
         {/* Item Exists Warning */}
         {itemExists && watchedName && watchedCategoryId > 0 && (
@@ -270,7 +328,7 @@ const AddItemForm: React.FC = () => {
           className="submit-button"
           startIcon={<Add />}
         >
-          {categoriesLoading ? 'טוען קטגוריות...' : 'הוסף לרשימה'}
+          {categoriesLoading ? "טוען קטגוריות..." : "הוסף לרשימה"}
         </Button>
       </form>
 
